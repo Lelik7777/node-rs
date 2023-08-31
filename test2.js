@@ -6,7 +6,8 @@ stdin.on('data',data=>{
   stdout.write(data.toString().split('').reverse().join(''))
   process.exit();
 })
-process.on('exit',code=>{
-  if(code!==0)
-  stdout.write(`error code ${code}`)
-})
+// optional
+// process.on('exit',code=>{
+//   if(code!==0)
+//   stdout.write(`error code ${code}`)
+// })
