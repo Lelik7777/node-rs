@@ -1,27 +1,47 @@
-const path = require("path");
 const fs = require("fs");
+const path=require('path');
 
-function create(title, content) {
-  fs.readFile('notes.json', (error, data) => {
-    if (error) return console.error(error.message);
-    const notes = JSON.parse(data);
-    const arr=[];
-    arr.push(notes);
-    arr.push({ title, content });
-    const json = JSON.stringify(...arr);
-
-    fs.writeFile('notes.json', json, (error) => {
-      if (error) return console.error(error.message);
-      console.log('Заметка создана');
-    });
-  });
+const [command, title, content] = process.argv.slice(2);
+switch (command) {
+  case "create":
+    create(title, content);
+    break;
+  case "list":
+    list();
+    break;
+  case "view":
+    view(title);
+    break;
+  case "remove":
+    remove(title);
+    break;
+  default:
+    break;
 }
-// function list() {
-//   fs.readFile(path.join(__dirname, "notes.json"), "utf-8", (err, data) => {
-//     if (err) throw err;
-//     console.log(data);
+function init(){
+fs.access('notes.json',fs.F_OK,err=>{
+  if(err) {
+    const json=JSON.stringify([]);
+    fs.writeFile(path.join(__dirname,'notes.json'),json,err=>{
+      if (err) {
+        throw err;
+      }
+    })
+  }
+  return;
+})
+}
+init();
+// function create(title, content) {
+//   fs.readFile('notes.json', (error, data) => {
+//     if (error) return console.error(error.message);
+//     const notes = JSON.parse(data);
+//     Array.from(notes).push({ title, content });
+//     const json = JSON.stringify(notes);
+
+//     fs.writeFile('notes.json', json, (error) => {
+//       if (error) return console.error(error.message);
+//       console.log('Заметка создана');
+//     });
 //   });
 // }
-create("note1", "i`d like to become a programmer");
-
-//list();
