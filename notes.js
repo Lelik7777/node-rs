@@ -1,13 +1,23 @@
 const fs = require("fs");
-const path=require('path');
+const path = require("path");
 
-const [command, title, content] = process.argv.slice(2);
+
+  if(!fs.existsSync('./notes.json')){
+    fs.writeFile(path.join(__dirname,"notes.json"), JSON.stringify([]), (err) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log("notes created");
+    });
+  }
+const [command, title, context] = process.argv.slice(2);
+
 switch (command) {
   case "create":
-    create(title, content);
+    create(title, context);
     break;
   case "list":
-    list();
+    list(title);
     break;
   case "view":
     view(title);
@@ -16,32 +26,39 @@ switch (command) {
     remove(title);
     break;
   default:
+    console.log("you should enter command, title, context");
     break;
 }
-function init(){
-fs.access('notes.json',fs.F_OK,err=>{
-  if(err) {
-    const json=JSON.stringify([]);
-    fs.writeFile(path.join(__dirname,'notes.json'),json,err=>{
-      if (err) {
-        throw err;
-      }
-    })
-  }
-  return;
-})
-}
-init();
-// function create(title, content) {
-//   fs.readFile('notes.json', (error, data) => {
-//     if (error) return console.error(error.message);
-//     const notes = JSON.parse(data);
-//     Array.from(notes).push({ title, content });
-//     const json = JSON.stringify(notes);
 
-//     fs.writeFile('notes.json', json, (error) => {
-//       if (error) return console.error(error.message);
-//       console.log('Заметка создана');
-//     });
-//   });
-// }
+function init() {
+  fs.access(path.join('./notes.json'), fs.F_OK, (err) => {
+    if (err) {
+      fs.writeFile(path.join(__dirname,"notes.json"), JSON.stringify([]), (err) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log("notes created");
+      });
+    }
+  });
+}
+function create(title, context) {
+
+  const note = { title, context };
+
+  fs.readFile(path.join(__dirname,"notes.json"), "utf-8", (err, data) => {
+    if (err) {
+      console.log("create 1", err);
+    }
+    const notes = JSON.parse(data);
+    notes.push(note);
+    const json = JSON.stringify(notes);
+    console.log(json);
+    fs.writeFile(path.join(__dirname,"notes.json"), json, (err) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log("note added");
+    });
+  });
+}
